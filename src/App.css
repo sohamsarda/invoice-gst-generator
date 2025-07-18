@@ -1,0 +1,221 @@
+body, html {
+  font-size: 0.9rem;
+  background: #f2f3f7
+}
+body, .form-control {
+  font-size: 0.9rem
+}
+body,
+html,
+#root,
+.App {
+  min-height: 100vh
+}
+.btn {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.66rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 .1rem .1rem rgba(0,0,0,.05)!important
+}
+.App-link {
+  color: #61dafb;
+}
+
+.btn-light {
+  border-color: #dedede
+}
+
+.btn-light:hover {
+  border-color: #dedede;
+  background-color: #f3f3f3
+}
+
+.shadow {
+  box-shadow: 0 .1rem .1rem rgba(0,0,0,.05)!important
+}
+
+.modal-content,
+.card {
+  overflow: hidden;
+  border-radius: 0.756rem
+}
+
+hr {
+  opacity: 0.1
+}
+
+.table th {
+  border-top: 1px solid #0000001a;
+  border-bottom: 1px solid #0000001a;
+  border-bottom-color: #0000001a!important
+}
+.table td {
+   text-align: left;
+}
+.table tr th:first-child,
+.table tr td:first-child {
+  padding-left: 0
+}
+.table tr th:last-child,
+.table tr td:last-child {
+  padding-right: 0
+}
+
+.form-control {
+  background: #f5f7f9;
+  font-weight: 400;
+  padding: .5rem .75rem;
+  border: none
+}
+.form-control:hover {
+  background: #f5f7f9;
+}
+.form-control::placeholder,
+.form-control::-ms-input-placeholder,
+.form-control:-ms-input-placeholder {
+  color: #9fa8b0
+}
+.form-control:focus {
+  background: #f5f7f9;
+}
+
+#invoiceCapture {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* --- Invoice Professional Styles --- */
+.invoice-capture {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #fff;
+  color: #222;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 32px 20px 32px;
+  box-sizing: border-box;
+}
+.invoice-header {
+  border-bottom: 2px solid #222;
+  padding: 12px 0 8px 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 0;
+  background: #f8f9fa;
+}
+.invoice-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+.invoice-logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+.invoice-company {
+  text-align: center;
+  margin: 2px 0 2px 0;
+}
+.company-name {
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  color: #222;
+}
+.company-address {
+  font-size: 0.98rem;
+  margin-bottom: 1px;
+}
+.invoice-meta {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 8px 0 12px 0;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 8px;
+  font-size: 1rem;
+}
+.invoice-meta > div {
+  font-weight: 500;
+}
+.invoice-meta span {
+  font-weight: 400;
+}
+.invoice-details {
+  margin-top: 10px;
+}
+.billed-to {
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+  min-width: 260px;
+}
+.section-title {
+  font-weight: 600;
+  font-size: 1.01rem;
+  margin-bottom: 2px;
+}
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.99rem;
+  background: #fafbfc;
+}
+.invoice-table th, .invoice-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.invoice-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+.invoice-table .text-end, .invoice-summary .text-end {
+  text-align: right;
+}
+.invoice-summary {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.99rem;
+}
+.invoice-summary td {
+  padding: 4px 4px;
+}
+.invoice-summary .total-row td {
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-top: 2px solid #222;
+  padding-top: 8px;
+}
+.invoice-notes {
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  background: #f9fafb;
+}
+.invoice-footer {
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #555;
+  background: #f9fafb;
+}
