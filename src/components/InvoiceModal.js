@@ -77,7 +77,7 @@ class InvoiceModal extends React.Component {
               <div className="col-md-4">
                 <div className="card p-3 h-100" style={{background: '#f8fafc', border: '1px solid #e3e7ef', borderRadius: '10px'}}>
                   <div className="fw-bold mb-2" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>
-                    <span role="img" aria-label="Supplier" className="me-1">🏢</span> Supplier
+                    <span role="img" aria-label="Supplier" className="me-1"></span> Supplier
                   </div>
                   <div className="mb-1">{this.props.info.billFrom || 'Supplier Name'}</div>
                   <div className="mb-1">{this.props.info.billFromAddress || ''}</div>
@@ -89,7 +89,7 @@ class InvoiceModal extends React.Component {
               <div className="col-md-4">
                 <div className="card p-3 h-100" style={{background: '#f8fafc', border: '1px solid #e3e7ef', borderRadius: '10px'}}>
                   <div className="fw-bold mb-2" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>
-                    <span role="img" aria-label="Invoice" className="me-1">🧾</span> Invoice Details
+                    <span role="img" aria-label="Invoice" className="me-1"></span> Invoice Details
                   </div>
                   <div className="mb-1"><b>Tax Invoice</b></div>
                   <div className="mb-1">Invoice No: {this.props.info.formattedInvoiceNumber || this.props.info.invoiceNumber || ''}</div>
@@ -101,7 +101,7 @@ class InvoiceModal extends React.Component {
               <div className="col-md-4">
                 <div className="card p-3 h-100" style={{background: '#f8fafc', border: '1px solid #e3e7ef', borderRadius: '10px'}}>
                   <div className="fw-bold mb-2" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>
-                    <span role="img" aria-label="Recipient" className="me-1">👤</span> Recipient
+                    <span role="img" aria-label="Recipient" className="me-1"></span> Recipient
                   </div>
                   <div className="mb-1">{this.props.info.billTo || ''}</div>
                   <div className="mb-1">{this.props.info.billToAddress || ''}</div>
@@ -113,7 +113,7 @@ class InvoiceModal extends React.Component {
             </div>
             <div className="gov-shipping-details card p-3 mb-3" style={{background: '#f8fafc', border: '1px solid #e3e7ef', borderRadius: '10px'}}>
               <div className="fw-bold mb-2" style={{fontSize: '1.08rem', letterSpacing: '0.5px'}}>
-                <span role="img" aria-label="Shipping" className="me-1">🚚</span> Shipping Details
+                <span role="img" aria-label="Shipping" className="me-1"></span> Shipping Details
               </div>
               <div className="mb-1"><b>Shipping To:</b> {this.props.info.shipTo || this.props.info.billTo || ''}</div>
               <div className="mb-1">{this.props.info.shipToAddress || this.props.info.billToAddress || ''}</div>
