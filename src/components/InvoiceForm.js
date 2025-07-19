@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
+import Modal from 'react-bootstrap/Modal'; // Added Modal import
 
 class InvoiceForm extends React.Component {
   constructor(props) {
@@ -51,6 +52,8 @@ class InvoiceForm extends React.Component {
       bankBranch: '',
       bankUPI: '',
       focusIndex: 0, // track which item to focus
+      businessAddresses: [], // array of saved business addresses
+      showManagementModal: false, // for managing saved data
     };
     this.state.items = [
       {
@@ -70,6 +73,8 @@ class InvoiceForm extends React.Component {
     this.editField = this.editField.bind(this);
   }
   componentDidMount(prevProps) {
+    const addresses = JSON.parse(localStorage.getItem('businessAddresses') || '[]');
+    this.setState({ businessAddresses: addresses });
     this.handleCalculateTotal()
   }
   handleRowDel(items) {
@@ -172,6 +177,57 @@ class InvoiceForm extends React.Component {
       alert('No draft found.');
     }
   }
+  saveBusinessAddress = () => {
+    let addresses = JSON.parse(localStorage.getItem('businessAddresses') || '[]');
+    addresses.push({
+      billFrom: this.state.billFrom,
+      billFromEmail: this.state.billFromEmail,
+      billFromAddress: this.state.billFromAddress,
+      billFromGSTIN: this.state.billFromGSTIN,
+      billFromState: this.state.billFromState,
+      billFromStateCode: this.state.billFromStateCode,
+      billFromPIN: this.state.billFromPIN,
+    });
+    localStorage.setItem('businessAddresses', JSON.stringify(addresses));
+    this.setState({ businessAddresses: addresses });
+    alert('Business address saved!');
+  }
+
+  handleBusinessAddressSelect = (e) => {
+    const idx = e.target.value;
+    if (idx !== "") {
+      const addr = this.state.businessAddresses[idx];
+      this.setState({
+        billFrom: addr.billFrom,
+        billFromEmail: addr.billFromEmail,
+        billFromAddress: addr.billFromAddress,
+        billFromGSTIN: addr.billFromGSTIN,
+        billFromState: addr.billFromState,
+        billFromStateCode: addr.billFromStateCode,
+        billFromPIN: addr.billFromPIN,
+      });
+    }
+  }
+  deleteBusinessAddress = (index) => {
+    let addresses = JSON.parse(localStorage.getItem('businessAddresses') || '[]');
+    addresses.splice(index, 1);
+    localStorage.setItem('businessAddresses', JSON.stringify(addresses));
+    this.setState({ businessAddresses: addresses });
+    alert('Business address deleted!');
+  }
+
+  deleteDraft = () => {
+    localStorage.removeItem('invoiceDraft');
+    alert('Draft deleted!');
+  }
+
+  openManagementModal = () => {
+    this.setState({ showManagementModal: true });
+  }
+
+  closeManagementModal = () => {
+    this.setState({ showManagementModal: false });
+  }
   render() {
     return (
       <Form onSubmit={this.openModal}>
@@ -181,6 +237,20 @@ class InvoiceForm extends React.Component {
           <Row className="mb-4">
             <Col md={6} className="mb-3">
               <Form.Label className="fw-bold">Bill from:</Form.Label>
+              <Form.Select onChange={this.handleBusinessAddressSelect} className="my-2">
+                <option value="">Select Saved Business Address</option>
+                {this.state.businessAddresses && this.state.businessAddresses.map((addr, idx) => (
+                  <option key={idx} value={idx}>{addr.billFrom} ({addr.billFromAddress})</option>
+                ))}
+              </Form.Select>
+              <div className="d-flex gap-2 my-2">
+                <Button variant="outline-secondary" onClick={this.saveBusinessAddress}>
+                  Save Current as Business Address
+                </Button>
+                <Button variant="outline-info" onClick={this.openManagementModal}>
+                  Manage Saved Data
+                </Button>
+              </div>
               <Form.Control placeholder={"Who is this invoice from?"} rows={3} value={this.state.billFrom} type="text" name="billFrom" className="my-2" onChange={this.editField} autoComplete="name" required="required"/>
               <Form.Control placeholder={"Email address"} value={this.state.billFromEmail} type="email" name="billFromEmail" className="my-2" onChange={this.editField} autoComplete="email" required="required"/>
               <Form.Control placeholder={"Billing address"} value={this.state.billFromAddress} type="text" name="billFromAddress" className="my-2" autoComplete="address" onChange={this.editField} required="required"/>
@@ -281,6 +351,7 @@ class InvoiceForm extends React.Component {
           <div className="text-end mt-4">
             <Button variant="outline-secondary" className="me-2" onClick={this.saveDraft}>Save Draft</Button>
             <Button variant="outline-primary" className="me-2" onClick={this.loadDraft}>Load Draft</Button>
+            <Button variant="outline-danger" className="me-2" onClick={this.deleteDraft}>Delete Draft</Button>
             <Button variant="primary" type="submit" size="lg" className="px-5 py-2 fw-bold shadow-sm">Review Invoice</Button>
           </div>
         </Card>
@@ -299,6 +370,66 @@ class InvoiceForm extends React.Component {
           igstAmount={this.state.igstAmount}
           total={this.state.total}
         />
+        {/* Management Modal */}
+        <Modal show={this.state.showManagementModal} onHide={this.closeManagementModal} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Manage Saved Data</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h5>Saved Business Addresses</h5>
+            {this.state.businessAddresses.length === 0 ? (
+              <p className="text-muted">No saved business addresses</p>
+            ) : (
+              <div className="mb-4">
+                {this.state.businessAddresses.map((addr, idx) => (
+                  <div key={idx} className="card mb-2 p-3">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <strong>{addr.billFrom}</strong><br/>
+                        <small>{addr.billFromEmail}</small><br/>
+                        <small>{addr.billFromAddress}</small><br/>
+                        <small>GSTIN: {addr.billFromGSTIN}</small>
+                      </div>
+                      <Button 
+                        variant="outline-danger" 
+                        size="sm" 
+                        onClick={() => this.deleteBusinessAddress(idx)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <h5>Saved Draft</h5>
+            {localStorage.getItem('invoiceDraft') ? (
+              <div className="card mb-2 p-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Invoice Draft</strong><br/>
+                    <small>Last saved draft</small>
+                  </div>
+                  <Button 
+                    variant="outline-danger" 
+                    size="sm" 
+                    onClick={this.deleteDraft}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted">No saved draft</p>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeManagementModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Form>
     );
   }
