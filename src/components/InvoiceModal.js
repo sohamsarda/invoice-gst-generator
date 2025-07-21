@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import { BiPaperPlane, BiCloudDownload } from "react-icons/bi";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf'
+import ReactGA from 'react-ga4';
 
 async function GenerateInvoice() {
   // Wait for all fonts to be loaded
@@ -33,6 +34,10 @@ async function GenerateInvoice() {
     const pdfHeight = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save('invoice.pdf'); // Use a generic name
+  });
+  ReactGA.event({
+    category: "Invoice Actions",
+    action: "Downloaded PDF",
   });
 }
 
