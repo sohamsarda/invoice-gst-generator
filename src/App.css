@@ -94,17 +94,21 @@ hr {
   flex-direction: column;
   justify-content: space-between;
   width: 800px;
-  min-height: 1122px; /* A4 height in px at 96dpi */
+  min-height: 1122px;
   background: #fff;
-  margin: 0 auto;
+  margin: 0 auto; /* Centering the invoice within the modal body */
   padding: 32px;
   box-sizing: border-box;
-  box-shadow: 0 0 8px rgba(0,0,0,0.08);
   border-radius: 10px;
 }
 
+/* This is the definitive fix: make the modal's content area scrollable */
+.invoice-modal-dialog .modal-content {
+  overflow-x: auto;
+}
+
 .invoice-body {
-  flex-grow: 1; /* Allows the body to grow and push the footer down */
+  flex-grow: 1;
 }
 
 .invoice-footer {
@@ -230,4 +234,16 @@ hr {
   font-style: italic;
   color: #555;
   background: #f9fafb;
+}
+
+/* --- Styles for the Hidden, PDF-Specific Invoice --- */
+.invoice-capture-pdf {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 800px; /* Fixed desktop width */
+  min-height: 1122px; /* A4 height */
+  background: #fff;
+  padding: 32px;
+  box-sizing: border-box;
 }
