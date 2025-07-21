@@ -8,6 +8,7 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import Modal from 'react-bootstrap/Modal'; // Added Modal import
+import ReactGA from 'react-ga4';
 
 class InvoiceForm extends React.Component {
   constructor(props) {
@@ -206,6 +207,11 @@ class InvoiceForm extends React.Component {
       loadedDraftIndex: newIndex,
       showSaveDraftModal: false,
     });
+    ReactGA.event({
+      category: "Draft Management",
+      action: "Saved New Draft",
+      label: name, // Optionally track the draft name
+    });
     alert('New draft saved!');
   }
 
@@ -222,6 +228,10 @@ class InvoiceForm extends React.Component {
     
     this.setState({ drafts: updatedDrafts, showSaveDraftModal: false });
     localStorage.setItem('invoiceDrafts', JSON.stringify(updatedDrafts));
+    ReactGA.event({
+      category: "Draft Management",
+      action: "Updated Existing Draft",
+    });
     alert('Draft updated!');
   }
 
@@ -277,6 +287,10 @@ class InvoiceForm extends React.Component {
     drafts.splice(idx, 1);
     localStorage.setItem('invoiceDrafts', JSON.stringify(drafts));
     this.setState({ drafts });
+    ReactGA.event({
+      category: "Draft Management",
+      action: "Deleted Draft",
+    });
     alert('Draft deleted!');
   }
   saveBusinessAddress = () => {
@@ -292,6 +306,10 @@ class InvoiceForm extends React.Component {
     });
     localStorage.setItem('businessAddresses', JSON.stringify(addresses));
     this.setState({ businessAddresses: addresses });
+    ReactGA.event({
+      category: "Address Management",
+      action: "Saved Business Address",
+    });
     alert('Business address saved!');
   }
 
@@ -315,6 +333,10 @@ class InvoiceForm extends React.Component {
     addresses.splice(index, 1);
     localStorage.setItem('businessAddresses', JSON.stringify(addresses));
     this.setState({ businessAddresses: addresses });
+    ReactGA.event({
+      category: "Address Management",
+      action: "Deleted Business Address",
+    });
     alert('Business address deleted!');
   }
 
