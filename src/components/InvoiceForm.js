@@ -54,6 +54,12 @@ class InvoiceForm extends React.Component {
       focusIndex: 0, // track which item to focus
       businessAddresses: [], // array of saved business addresses
       showManagementModal: false, // for managing saved data
+      draftName: '', // for naming new drafts
+      drafts: [], // array of saved drafts
+      editingDraftIndex: null, // track which draft is being edited
+      editingDraftName: '', // store the new name during editing
+      loadedDraftIndex: null, // track which draft is currently loaded
+      showSaveDraftModal: false, // for the new save draft modal
     };
     this.state.items = [
       {
@@ -74,7 +80,8 @@ class InvoiceForm extends React.Component {
   }
   componentDidMount(prevProps) {
     const addresses = JSON.parse(localStorage.getItem('businessAddresses') || '[]');
-    this.setState({ businessAddresses: addresses });
+    const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    this.setState({ businessAddresses: addresses, drafts });
     this.handleCalculateTotal()
   }
   handleRowDel(items) {
@@ -87,12 +94,12 @@ class InvoiceForm extends React.Component {
     var items = {
       id: id,
       name: '',
-      price: '1.00',
+      price: '',
       description: '',
-      quantity: 1,
+      quantity: '',
       hsn: '',
       unit: '',
-      discount: '', // empty by default
+      discount: '', 
       cgstRate: '',
       sgstRate: '',
       igstRate: '',
@@ -165,17 +172,112 @@ class InvoiceForm extends React.Component {
     return `INV/${year}-${nextYear}/${serial}`;
   }
   saveDraft = () => {
-    localStorage.setItem('invoiceDraft', JSON.stringify(this.state));
+    let drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    const name = this.state.draftName.trim() || `Draft ${drafts.length + 1}`;
+    const date = new Date().toLocaleString();
+    drafts.push({ name, date, data: { ...this.state } });
+    localStorage.setItem('invoiceDrafts', JSON.stringify(drafts));
+    this.setState({ drafts, draftName: '' });
     alert('Draft saved!');
   }
 
-  loadDraft = () => {
-    const draft = localStorage.getItem('invoiceDraft');
-    if (draft) {
-      this.setState(JSON.parse(draft));
-    } else {
-      alert('No draft found.');
+  loadDraft = (idx) => {
+    const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    if (drafts[idx]) {
+      this.setState({ ...drafts[idx].data, loadedDraftIndex: idx });
+      this.closeManagementModal();
     }
+  }
+
+  handleSaveNewDraft = () => {
+    let drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    const name = this.state.draftName.trim() || `Draft ${drafts.length + 1}`;
+    const date = new Date().toLocaleString();
+    const currentState = { ...this.state };
+    delete currentState.loadedDraftIndex;
+    delete currentState.showSaveDraftModal;
+    drafts.push({ name, date, data: currentState });
+    
+    const newIndex = drafts.length - 1;
+    localStorage.setItem('invoiceDrafts', JSON.stringify(drafts));
+    this.setState({
+      drafts,
+      draftName: '',
+      loadedDraftIndex: newIndex,
+      showSaveDraftModal: false,
+    });
+    alert('New draft saved!');
+  }
+
+  handleUpdateDraft = () => {
+    const { drafts, loadedDraftIndex } = this.state;
+    if (loadedDraftIndex === null) return;
+    
+    const updatedDrafts = [...drafts];
+    const currentState = { ...this.state };
+    delete currentState.loadedDraftIndex;
+    delete currentState.showSaveDraftModal;
+    updatedDrafts[loadedDraftIndex].data = currentState;
+    updatedDrafts[loadedDraftIndex].date = new Date().toLocaleString();
+    
+    this.setState({ drafts: updatedDrafts, showSaveDraftModal: false });
+    localStorage.setItem('invoiceDrafts', JSON.stringify(updatedDrafts));
+    alert('Draft updated!');
+  }
+
+  handleSaveDraftClick = () => {
+    this.setState({ showSaveDraftModal: true });
+  }
+
+  handleCloseSaveDraftModal = () => {
+    this.setState({ showSaveDraftModal: false });
+  }
+
+  handleNewInvoice = () => {
+    // Reset the form to its initial state
+    this.setState({
+      isOpen: false,
+      currency: '₹',
+      currentDate: '',
+      invoiceNumber: 1,
+      dateOfIssue: '',
+      billTo: '',
+      billToEmail: '',
+      billToAddress: '',
+      billFrom: '',
+      billFromEmail: '',
+      billFromAddress: '',
+      notes: '',
+      total: '0.00',
+      subTotal: '0.00',
+      totalDiscount: '0.00',
+      cgstAmount: '0.00',
+      sgstAmount: '0.00',
+      igstAmount: '0.00',
+      items: [{
+        id: 0,
+        name: '',
+        description: '',
+        price: '',
+        quantity: '',
+        hsn: '',
+        unit: '',
+        discount: '',
+        cgstRate: '',
+        sgstRate: '',
+        igstRate: '',
+      }],
+      loadedDraftIndex: null,
+      draftName: '',
+    });
+  }
+
+  deleteDraft = (idx) => {
+    let drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    drafts.splice(idx, 1);
+    localStorage.setItem('invoiceDrafts', JSON.stringify(drafts));
+    this.setState({ drafts });
+    alert('Draft deleted!');
   }
   saveBusinessAddress = () => {
     let addresses = JSON.parse(localStorage.getItem('businessAddresses') || '[]');
@@ -216,17 +318,40 @@ class InvoiceForm extends React.Component {
     alert('Business address deleted!');
   }
 
-  deleteDraft = () => {
-    localStorage.removeItem('invoiceDraft');
-    alert('Draft deleted!');
-  }
-
   openManagementModal = () => {
-    this.setState({ showManagementModal: true });
+    const drafts = JSON.parse(localStorage.getItem('invoiceDrafts') || '[]');
+    this.setState({ drafts, showManagementModal: true });
   }
 
   closeManagementModal = () => {
     this.setState({ showManagementModal: false });
+  }
+
+  updateDraftName = () => {
+    const { drafts, editingDraftIndex, editingDraftName } = this.state;
+    if (editingDraftIndex === null) return;
+
+    const updatedDrafts = [...drafts];
+    updatedDrafts[editingDraftIndex].name = editingDraftName.trim() || `Draft ${editingDraftIndex + 1}`;
+    
+    this.setState({
+      drafts: updatedDrafts,
+      editingDraftIndex: null,
+      editingDraftName: '',
+    });
+    localStorage.setItem('invoiceDrafts', JSON.stringify(updatedDrafts));
+    alert('Draft name updated!');
+  }
+
+  startEditingDraft = (idx) => {
+    this.setState({
+      editingDraftIndex: idx,
+      editingDraftName: this.state.drafts[idx].name,
+    });
+  }
+
+  cancelEditingDraft = () => {
+    this.setState({ editingDraftIndex: null, editingDraftName: '' });
   }
   render() {
     return (
@@ -331,7 +456,7 @@ class InvoiceForm extends React.Component {
               </div>
               <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                 <span className="fw-bold">Total CGST:</span>
-                <span>{this.state.currency}{this.state.cgstAmount}</span>
+                <span>{this.state.currency}{this.state.cgstAmount || "0.00"}</span>
               </div>
               <div className="d-flex flex-row align-items-start justify-content-between mt-2">
                 <span className="fw-bold">Total SGST:</span>
@@ -348,10 +473,10 @@ class InvoiceForm extends React.Component {
               </div>
             </Col>
           </Row>
-          <div className="text-end mt-4">
-            <Button variant="outline-secondary" className="me-2" onClick={this.saveDraft}>Save Draft</Button>
-            <Button variant="outline-primary" className="me-2" onClick={this.loadDraft}>Load Draft</Button>
-            <Button variant="outline-danger" className="me-2" onClick={this.deleteDraft}>Delete Draft</Button>
+          <div className="text-end mt-4 d-flex justify-content-end align-items-center gap-2">
+            <Button variant="outline-secondary" onClick={this.handleNewInvoice}>New Invoice</Button>
+            <Button variant="outline-success" onClick={this.handleSaveDraftClick}>Save Draft</Button>
+            <Button variant="info" className="me-2" onClick={this.openManagementModal}>Manage Saved Data</Button>
             <Button variant="primary" type="submit" size="lg" className="px-5 py-2 fw-bold shadow-sm">Review Invoice</Button>
           </div>
         </Card>
@@ -403,31 +528,102 @@ class InvoiceForm extends React.Component {
               </div>
             )}
             
-            <h5>Saved Draft</h5>
-            {localStorage.getItem('invoiceDraft') ? (
-              <div className="card mb-2 p-3">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>Invoice Draft</strong><br/>
-                    <small>Last saved draft</small>
-                  </div>
-                  <Button 
-                    variant="outline-danger" 
-                    size="sm" 
-                    onClick={this.deleteDraft}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
+            <h5>Saved Drafts</h5>
+            {this.state.drafts.length === 0 ? (
+              <p className="text-muted">No saved drafts</p>
             ) : (
-              <p className="text-muted">No saved draft</p>
+              <div className="mb-4">
+                {this.state.drafts.map((draft, idx) => (
+                  <div key={idx} className="card mb-2 p-3">
+                    {this.state.editingDraftIndex === idx ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={this.state.editingDraftName}
+                          onChange={e => this.setState({ editingDraftName: e.target.value })}
+                          className="form-control mb-2"
+                        />
+                        <div className="d-flex gap-2">
+                          <Button variant="outline-success" size="sm" onClick={this.updateDraftName}>Save</Button>
+                          <Button variant="outline-secondary" size="sm" onClick={this.cancelEditingDraft}>Cancel</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>{draft.name}</strong><br/>
+                          <small>{draft.date}</small>
+                        </div>
+                        <div className="d-flex gap-2">
+                          <Button variant="outline-secondary" size="sm" onClick={() => this.startEditingDraft(idx)}>Edit Name</Button>
+                          <Button variant="outline-primary" size="sm" onClick={() => this.loadDraft(idx)}>Load</Button>
+                          <Button variant="outline-danger" size="sm" onClick={() => this.deleteDraft(idx)}>Delete</Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeManagementModal}>
               Close
             </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* Save Draft Modal */}
+        <Modal show={this.state.showSaveDraftModal} onHide={this.handleCloseSaveDraftModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Save Draft</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {this.state.loadedDraftIndex !== null ? (
+              <div>
+                <p>You are editing <strong>{this.state.drafts[this.state.loadedDraftIndex]?.name}</strong>.</p>
+                <p>Do you want to update the current draft or save your changes as a new draft?</p>
+                <div className="d-grid gap-2">
+                  <Button variant="primary" onClick={this.handleUpdateDraft}>
+                    Update Current Draft
+                  </Button>
+                  <hr/>
+                  <div className="d-flex align-items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="New draft name (optional)"
+                      value={this.state.draftName}
+                      onChange={e => this.setState({ draftName: e.target.value })}
+                      className="form-control"
+                    />
+                    <Button variant="secondary" onClick={this.handleSaveNewDraft}>
+                      Save as New Draft
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label htmlFor="draftName" className="form-label">Draft Name (optional)</label>
+                <input
+                  id="draftName"
+                  type="text"
+                  placeholder="e.g., Invoice for Client X"
+                  value={this.state.draftName}
+                  onChange={e => this.setState({ draftName: e.target.value })}
+                  className="form-control"
+                />
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="light" onClick={this.handleCloseSaveDraftModal}>
+              Cancel
+            </Button>
+            {this.state.loadedDraftIndex === null && (
+              <Button variant="primary" onClick={this.handleSaveNewDraft}>
+                Save
+              </Button>
+            )}
           </Modal.Footer>
         </Modal>
       </Form>
