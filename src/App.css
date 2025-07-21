@@ -2,6 +2,7 @@ body, html {
   font-size: 0.9rem;
   background: #f2f3f7
 }
+
 body, .form-control {
   font-size: 0.9rem
 }
@@ -89,18 +90,29 @@ hr {
 
 /* --- Invoice Professional Styles --- */
 .invoice-capture {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 800px;
+  min-height: 1122px; /* A4 height in px at 96dpi */
   background: #fff;
-  color: #222;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  width: 100%;
-  max-width: 900px;
   margin: 0 auto;
-  padding: 24px 32px 20px 32px;
+  padding: 32px;
   box-sizing: border-box;
+  box-shadow: 0 0 8px rgba(0,0,0,0.08);
+  border-radius: 10px;
 }
+
+.invoice-body {
+  flex-grow: 1; /* Allows the body to grow and push the footer down */
+}
+
+.invoice-footer {
+  flex-shrink: 0; /* Prevents the footer from shrinking */
+  text-align: center; /* Example styling for footer */
+}
+
+/* Invoice table: uniform cell size, even borders */
 .invoice-header {
   border-bottom: 2px solid #222;
   padding: 12px 0 8px 0;
