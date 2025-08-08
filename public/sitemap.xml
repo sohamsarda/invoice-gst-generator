@@ -8,14 +8,7 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- Add more URLs below if you have more pages -->
-  <!--
-  <url>
-    <loc>https://invoice-gst-generator.vercel.app/other-page</loc>
-    <lastmod>2025-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  -->
+
 
 </urlset>
+
